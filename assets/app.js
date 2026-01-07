@@ -162,3 +162,87 @@ export function initFeedbackModal(embedUrl) {
 
   return { open, close };
 }
+
+// ===== Intro modal (first-visit gate) =====
+export function initIntroModal(options) {
+  const { storageKey = "jhs_intro_seen_v1", forceOpenOnFirstVisit = true } =
+    options || {};
+
+  const backdrop = document.getElementById("introBackdrop");
+  const body = document.getElementById("introBody");
+  const acceptBtn = document.getElementById("introAccept");
+  const closeBtn = document.getElementById("introClose");
+  const hint = document.getElementById("introHint");
+
+  if (!backdrop || !body || !acceptBtn || !closeBtn || !hint) return;
+
+  const isSeen = () => localStorage.getItem(storageKey) === "1";
+
+  function open() {
+    backdrop.classList.remove("hidden");
+    // 初回（未同意）は閉じれない
+    const seen = isSeen();
+    closeBtn.disabled = !seen;
+    acceptBtn.disabled = true;
+    hint.textContent = "下までスクロールしてください";
+    // 開いたら先頭へ
+    body.scrollTop = 0;
+  }
+
+  function close() {
+    backdrop.classList.add("hidden");
+  }
+
+  function unlock() {
+    acceptBtn.disabled = false;
+    hint.textContent = "OK！「同意して開始」を押してください";
+    // 一度でも同意済みなら閉じるも有効
+    closeBtn.disabled = false;
+  }
+
+  // スクロールで解禁
+  body.addEventListener("scroll", () => {
+    const nearBottom =
+      body.scrollTop + body.clientHeight >= body.scrollHeight - 4;
+    if (nearBottom) unlock();
+  });
+
+  // 同意
+  acceptBtn.addEventListener("click", () => {
+    localStorage.setItem(storageKey, "1");
+    close();
+  });
+
+  // 閉じる（2回目以降のみ）
+  closeBtn.addEventListener("click", () => {
+    if (!isSeen()) return;
+    close();
+  });
+
+  // 背景クリックで閉じる（2回目以降のみ）
+  backdrop.addEventListener("click", (e) => {
+    if (e.target !== backdrop) return;
+    if (!isSeen()) return;
+    close();
+  });
+
+  // Escで閉じる（2回目以降のみ）
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (backdrop.classList.contains("hidden")) return;
+    if (!isSeen()) return;
+    close();
+  });
+
+  // ボタンで開く（2回目以降用）
+  document.querySelectorAll(".open-intro").forEach((btn) => {
+    btn.addEventListener("click", open);
+  });
+
+  // 初回だけ自動で開く
+  if (forceOpenOnFirstVisit && !isSeen()) {
+    open();
+  }
+
+  return { open, close };
+}

@@ -12,6 +12,8 @@
       <p class="muted">先生が作った問題（CSV）からランダム出題します。</p>
     </header>
 
+    <button class="linklike open-intro" type="button">使い方・注意事項</button>
+
     <main class="container card">
       <h2>設定</h2>
 
@@ -56,6 +58,77 @@
       </div>
     </main>
 
+    <!-- 使用上の注意/使い方（初回強制表示） -->
+    <div
+      id="introBackdrop"
+      class="intro-backdrop hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="使用上の注意と使い方"
+    >
+      <div class="intro-modal">
+        <div class="intro-head">
+          <div><b>使用上の注意 / 使い方</b></div>
+          <button id="introClose" class="ghost" type="button" disabled>
+            閉じる
+          </button>
+        </div>
+
+        <div id="introBody" class="intro-body">
+          <h2>これはベータ版です</h2>
+          <ul>
+            <li>問題・解答に誤りが含まれる可能性があります。</li>
+            <li>
+              採点は「完全一致（＋別解）」中心です。表記ゆれは別解として登録して対応します。
+            </li>
+            <li>
+              内容の正確性は、教科書・授業プリント等で最終確認してください。
+            </li>
+          </ul>
+
+          <h2>フィードバックのお願い</h2>
+          <ul>
+            <li>誤り・改善案は「誤り/改善フォーム」から送ってください。</li>
+            <li>個人情報（氏名・住所・学校名など）は送らないでください。</li>
+          </ul>
+
+          <h2>使い方</h2>
+          <ol>
+            <li>ホームで問題数を選びます。</li>
+            <li>「ブラウザで解く（Aモード）」を押します。</li>
+            <li>表示された問題すべてに答えを入力します。</li>
+            <li>「一気に採点」で○×と正答が表示されます。</li>
+            <li>間違いだけ再挑戦もできます。</li>
+          </ol>
+
+          <h2>印刷/PDF</h2>
+          <ul>
+            <li>
+              ホームから「問題を作る（印刷/PDF）」を選ぶと、A/B形式で問題を出力できます。
+            </li>
+            <li>「印刷」からPDF保存もできます。</li>
+          </ul>
+
+          <hr />
+          <p class="muted">
+            下までスクロールすると「同意して開始」が押せます。
+          </p>
+          <div style="height: 40px"></div>
+        </div>
+
+        <div class="intro-foot">
+          <div id="introHint" class="intro-hint">
+            下までスクロールしてください
+          </div>
+          <div class="actions" style="margin: 0">
+            <button id="introAccept" class="primary" type="button" disabled>
+              同意して開始
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- フォーム埋め込みモーダル -->
     <div
       id="fbBackdrop"
@@ -82,12 +155,19 @@
         saveSettings,
         loadSettings,
         initFeedbackModal,
+        initIntroModal,
       } from "./assets/app.js";
 
       // ★ここを quiz.js と同じ埋め込みURLに
       const FEEDBACK_EMBED_URL =
         "https://docs.google.com/forms/d/e/1FAIpQLSfUVun_xGMb8m2UGkkEBVzQe3iBfJY8bk6yUUIiLvsTdh2EpQ/viewform?usp=dialog_embedded=true";
       initFeedbackModal(FEEDBACK_EMBED_URL);
+
+      // ★使用上の注意：初回だけ強制表示（バージョン変えたければキーを変える）
+      initIntroModal({
+        storageKey: "jhs_intro_seen_v1",
+        forceOpenOnFirstVisit: true,
+      });
 
       const countEl = document.getElementById("count");
       const unitEl = document.getElementById("unit");
