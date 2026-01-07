@@ -1,0 +1,435 @@
+:root {
+  --bg: #0b0c10;
+  --card: #12131a;
+  --text: #f1f5f9;
+  --muted: #a1a1aa;
+  --line: #242535;
+  --primary: #4f46e5;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP",
+    sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.container {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+h1 {
+  margin: 8px 0 4px;
+  font-size: 1.6rem;
+}
+h2 {
+  margin: 10px 0;
+  font-size: 1.2rem;
+}
+h3 {
+  margin: 0 0 6px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.muted {
+  color: var(--muted);
+}
+.hidden {
+  display: none;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+label {
+  font-weight: 600;
+}
+
+input[type="text"],
+select {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #0f1117;
+  color: var(--text);
+  outline: none;
+}
+
+.inline {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+button {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #0f1117;
+  color: var(--text);
+  cursor: pointer;
+}
+
+button.primary {
+  background: var(--primary);
+  border-color: transparent;
+}
+
+button.ghost {
+  background: transparent;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.link {
+  color: #93c5fd;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 16px 0;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.prompt {
+  line-height: 1.8;
+  background: #0f1117;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.feedback {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #0f1117;
+  min-height: 44px;
+}
+
+.footer {
+  opacity: 0.9;
+  padding-bottom: 30px;
+}
+
+/* Worksheet print area */
+.paper {
+  background: #ffffff;
+  color: #111827;
+  border-radius: 10px;
+  padding: 18px;
+}
+
+.paper .muted {
+  color: #4b5563;
+}
+.paper-head {
+  margin-bottom: 12px;
+}
+.q-list {
+  padding-left: 22px;
+}
+.q-list li {
+  margin: 10px 0;
+  line-height: 1.7;
+}
+
+.answer-line {
+  display: inline-block;
+  min-width: 220px;
+  border-bottom: 1px solid #111827;
+  transform: translateY(-2px);
+}
+
+.answer-box {
+  display: block;
+  height: 62px;
+  border: 1px solid #111827;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.page-break {
+  break-before: page;
+  height: 0;
+}
+
+/* Print rules */
+@media print {
+  body {
+    background: #fff;
+  }
+  .container {
+    max-width: none;
+    padding: 0;
+  }
+  .card {
+    border: none;
+    border-radius: 0;
+    padding: 0;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .paper {
+    border: none;
+    border-radius: 0;
+  }
+}
+
+.q-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.q-block {
+  background: #0f1117;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.q-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.q-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  border: 1px solid var(--line);
+  background: #0b0c10;
+}
+
+.mark.ok {
+  border-color: #16a34a;
+}
+.mark.ng {
+  border-color: #ef4444;
+}
+
+.small {
+  font-size: 0.92rem;
+}
+.ok-text {
+  color: #22c55e;
+}
+.ng-text {
+  color: #f87171;
+}
+
+/* 採点後の背景色（薄い黄緑/赤） */
+.q-block.graded-ok {
+  background: rgba(163, 230, 53, 0.12); /* 黄緑 */
+  border-color: rgba(163, 230, 53, 0.35);
+}
+
+.q-block.graded-ng {
+  background: rgba(239, 68, 68, 0.1); /* 赤 */
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+/* linkっぽいボタン */
+.linklike {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: #93c5fd;
+  cursor: pointer;
+  font: inherit;
+}
+.linklike:hover {
+  text-decoration: underline;
+}
+
+/* 誤爆防止の "その他" */
+.more {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px 12px;
+  background: #0f1117;
+}
+.more > summary {
+  cursor: pointer;
+  list-style: none;
+}
+.more > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* 危険ボタン */
+button.danger {
+  background: transparent;
+  border-color: rgba(239, 68, 68, 0.6);
+}
+
+/* フォーム埋め込みモーダル */
+.fb-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  z-index: 999;
+}
+
+.fb-modal {
+  width: min(980px, 100%);
+  height: min(780px, 92vh);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.fb-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+#fbFrame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
+
+/* hidden を fb-backdrop に確実に勝たせる */
+.fb-backdrop.hidden {
+  display: none !important;
+}
+
+.fb-backdrop.hidden {
+  display: none !important;
+}
+
+/* ===== Intro modal (使用上の注意/使い方) ===== */
+.intro-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  z-index: 998; /* fbより下でもOK。上にしたければ999 */
+}
+.intro-backdrop.hidden {
+  display: none !important;
+}
+
+.intro-modal {
+  width: min(920px, 100%);
+  height: min(780px, 92vh);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.intro-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.intro-body {
+  padding: 12px;
+  overflow: auto;
+  line-height: 1.8;
+}
+
+.intro-foot {
+  padding: 10px 12px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+.intro-hint {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+button.secondary {
+  background: transparent;
+}

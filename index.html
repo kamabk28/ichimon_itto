@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>中学理科 一問一答（ベータ）</title>
+    <link rel="stylesheet" href="./assets/style.css" />
+  </head>
+  <body>
+    <header class="container">
+      <h1>中学理科 一問一答 v0.1</h1>
+      <p class="muted">先生が作った問題（CSV）からランダム出題します。</p>
+    </header>
+
+    <main class="container card">
+      <h2>設定</h2>
+
+      <div class="row">
+        <label for="count">問題数</label>
+        <select id="count">
+          <option value="10">10問</option>
+          <option value="20">20問</option>
+          <option value="30">30問</option>
+          <option value="50">50問</option>
+          <option value="all">全問</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="unit">単元（ベータ：全て固定）</label>
+        <select id="unit" disabled>
+          <option value="all" selected>全て</option>
+        </select>
+        <small class="muted"
+          >※CSVには unit を入れておくと後で範囲選択を追加できます。</small
+        >
+      </div>
+
+      <div class="actions">
+        <button id="goQuiz" class="primary">ブラウザで解く（Aモード）</button>
+        <button id="goWorksheet">問題を作る（印刷/PDF）</button>
+      </div>
+
+      <hr />
+
+      <div class="row">
+        <div>
+          <h3>フィードバック</h3>
+          <p class="muted">
+            問題や答えの誤り・改善案はフォームから送ってください。
+          </p>
+          <button class="linklike open-feedback" type="button">
+            フォームを開く
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- フォーム埋め込みモーダル -->
+    <div
+      id="fbBackdrop"
+      class="fb-backdrop hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="フィードバックフォーム"
+    >
+      <div class="fb-modal">
+        <div class="fb-head">
+          <div><b>誤り報告・改善フォーム</b></div>
+          <button id="fbClose" class="ghost" type="button">閉じる</button>
+        </div>
+        <iframe id="fbFrame" title="Google Form" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <footer class="container footer">
+      <span class="muted">v0.1</span>
+    </footer>
+
+    <script type="module">
+      import {
+        saveSettings,
+        loadSettings,
+        initFeedbackModal,
+      } from "./assets/app.js";
+
+      // ★ここを quiz.js と同じ埋め込みURLに
+      const FEEDBACK_EMBED_URL =
+        "https://docs.google.com/forms/d/e/1FAIpQLSfUVun_xGMb8m2UGkkEBVzQe3iBfJY8bk6yUUIiLvsTdh2EpQ/viewform?usp=dialog_embedded=true";
+      initFeedbackModal(FEEDBACK_EMBED_URL);
+
+      const countEl = document.getElementById("count");
+      const unitEl = document.getElementById("unit");
+
+      const settings = loadSettings();
+      if (settings.count) countEl.value = settings.count;
+      if (settings.unit) unitEl.value = settings.unit;
+
+      function commit() {
+        saveSettings({
+          count: countEl.value,
+          unit: unitEl.value,
+          source: "teacher",
+        });
+      }
+
+      document.getElementById("goQuiz").addEventListener("click", () => {
+        commit();
+        location.href = "./quiz.html";
+      });
+
+      document.getElementById("goWorksheet").addEventListener("click", () => {
+        commit();
+        location.href = "./worksheet.html";
+      });
+
+      countEl.addEventListener("change", commit);
+    </script>
+  </body>
+</html>

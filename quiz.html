@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ブラウザで解く（Aモード）</title>
+    <link rel="stylesheet" href="./assets/style.css" />
+  </head>
+  <body>
+    <header class="container">
+      <div class="topbar">
+        <a class="link" href="./index.html">← ホーム</a>
+        <button class="linklike open-feedback" type="button">
+          誤り/改善フォーム
+        </button>
+      </div>
+      <h1>ブラウザで解く（Aモード）</h1>
+      <p class="muted">説明 → 単語を入力。最後に一気に採点します。</p>
+    </header>
+
+    <main class="container card">
+      <div id="loading" class="muted">読み込み中…</div>
+
+      <section id="quiz" class="hidden">
+        <div class="progress">
+          <span id="metaText"></span>
+          <span id="scoreText" class="muted"></span>
+        </div>
+
+        <div id="questionList" class="q-blocks"></div>
+
+        <div class="actions">
+          <button id="gradeAll" class="primary">一気に採点</button>
+
+          <!-- 誤爆防止：やり直しは「その他」に格納 -->
+          <details class="more">
+            <summary>その他</summary>
+            <div class="actions" style="margin-top: 10px">
+              <button id="retryAll" class="danger">入力を消してやり直す</button>
+            </div>
+            <small class="muted">※入力が全部消えます</small>
+          </details>
+        </div>
+
+        <!-- 下にもフォーム導線 -->
+        <div class="actions" style="margin-top: 16px">
+          <button class="ghost open-feedback" type="button">
+            誤り/改善フォームを開く
+          </button>
+        </div>
+      </section>
+
+      <section id="result" class="hidden">
+        <h2>結果</h2>
+        <p id="resultSummary"></p>
+
+        <div id="wrongList"></div>
+
+        <div class="actions">
+          <button id="retryWrong" class="primary">間違いだけもう一回</button>
+          <button id="backTop">上に戻る</button>
+          <button class="ghost open-feedback" type="button">
+            誤り/改善フォーム
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- フォーム埋め込みモーダル -->
+    <div
+      id="fbBackdrop"
+      class="fb-backdrop hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="フィードバックフォーム"
+    >
+      <div class="fb-modal">
+        <div class="fb-head">
+          <div><b>誤り報告・改善フォーム</b></div>
+          <button id="fbClose" class="ghost" type="button">閉じる</button>
+        </div>
+        <iframe id="fbFrame" title="Google Form" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <script type="module" src="./assets/quiz.js"></script>
+  </body>
+</html>

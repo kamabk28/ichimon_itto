@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>問題を作る（印刷/PDF）</title>
+    <link rel="stylesheet" href="./assets/style.css" />
+  </head>
+  <body>
+    <header class="container no-print">
+      <div class="topbar">
+        <a class="link" href="./index.html">← ホーム</a>
+        <a class="link" href="./feedback.html">誤り/改善フォーム</a>
+      </div>
+      <h1>問題を作る（印刷/PDF）</h1>
+      <p class="muted">
+        A/Bを選んで問題を生成し、そのまま印刷（PDF保存も可）できます。
+      </p>
+    </header>
+
+    <main class="container card">
+      <section class="no-print">
+        <div class="row">
+          <label>出力形式</label>
+          <div class="inline">
+            <label class="inline"
+              ><input type="radio" name="mode" value="A" checked />
+              A（説明→単語）</label
+            >
+            <label class="inline"
+              ><input type="radio" name="mode" value="B" />
+              B（単語→説明）</label
+            >
+          </div>
+        </div>
+
+        <div class="row">
+          <label>解答を出す</label>
+          <label class="inline"
+            ><input id="showAnswers" type="checkbox" /> 解答ページも作る</label
+          >
+        </div>
+
+        <div class="actions">
+          <button id="regenerate" class="primary">再抽出</button>
+          <button id="print">印刷（PDF保存）</button>
+        </div>
+
+        <hr />
+      </section>
+
+      <div id="loading" class="muted no-print">読み込み中…</div>
+
+      <section id="paper" class="paper hidden">
+        <div class="paper-head">
+          <h2 id="paperTitle">中学理科 一問一答</h2>
+          <p id="paperMeta" class="muted"></p>
+        </div>
+
+        <ol id="questionList" class="q-list"></ol>
+
+        <div id="answerPage" class="hidden">
+          <div class="page-break"></div>
+          <h2>解答</h2>
+          <ol id="answerList" class="q-list"></ol>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./assets/worksheet.js"></script>
+  </body>
+</html>
