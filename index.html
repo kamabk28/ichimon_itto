@@ -3,58 +3,43 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>中学理科 一問一答（ベータ）</title>
+    <title>中学理科 一問一答β</title>
     <link rel="stylesheet" href="./assets/style.css" />
   </head>
   <body>
     <header class="container">
-      <h1>中学理科 一問一答 v0.1</h1>
-      <p class="muted">a</p>
+      <h1>中学理科 一問一答 β</h1>
+      <p class="muted">v0.1.2.2</p>
     </header>
 
     <main class="container card">
-      <h2>設定</h2>
+      <h2>モードを選ぶ</h2>
+      <p class="muted">問題数は各モードの画面で選びます。</p>
 
-      <div class="row">
-        <label for="count">問題数</label>
-        <select id="count">
-          <option value="10">10問</option>
-          <option value="20">20問</option>
-          <option value="30">30問</option>
-          <option value="50">50問</option>
-          <option value="all">全問</option>
-        </select>
-      </div>
-
-      <div class="row">
-        <label for="unit">単元（ベータ：全て固定）</label>
-        <select id="unit" disabled>
-          <option value="all" selected>全て</option>
-        </select>
-        <small class="muted"
-          >※CSVには unit を入れておくと後で範囲選択を追加できます。</small
-        >
-      </div>
-
-      <div class="actions">
-        <button id="goQuiz" class="primary">ブラウザで解く（Aモード）</button>
-        <button id="goWorksheet">問題を作る（印刷/PDF）</button>
+      <div class="mode-actions">
+        <button id="goQuiz" class="primary big">
+          ブラウザで解く（Aモード）
+        </button>
+        <button id="goWorksheet" class="primary big">
+          問題を作る（印刷/PDF）
+        </button>
       </div>
 
       <hr />
 
-      <div class="row">
-        <div>
-          <h3>注意事項と使い方・フィードバック</h3>
+      <div>
+        <h3>使い方・注意事項 / フィードバック</h3>
+        <div class="actions">
           <p class="muted">
             使い方がわからないときは「使い方・注意事項」<br />問題や答えの誤り・改善案は「フォームを開く」から送ってください。
           </p>
           <button class="linklike open-intro" type="button">
             使い方・注意事項
           </button>
-          <br /><button class="linklike open-feedback" type="button">
-            フォームを開く
+          <button class="linklike open-feedback" type="button">
+            誤り/改善フォーム
           </button>
+          <a class="link" href="./history.html">更新履歴</a>
         </div>
       </div>
     </main>
@@ -80,7 +65,7 @@
           <ul>
             <li>問題・解答に誤りが含まれる可能性があります。</li>
             <li>
-              採点は「完全一致（＋別解）」中心です。表記ゆれは別解として登録して対応します。
+              採点は「完全一致（＋別解）」中心です。表記ゆれは別解として登録して対応します。(フィードバックを参照)
             </li>
             <li>
               内容の正確性は、教科書・授業プリント等で最終確認してください。
@@ -89,8 +74,10 @@
 
           <h2>フィードバックのお願い</h2>
           <ul>
-            <li>誤り・改善案は「誤り/改善フォーム」から送ってください。</li>
-            <li>個人情報（氏名・住所・学校名など）は送らないでください。</li>
+            <li>
+              誤り・改善案は「誤り/改善フォーム」から送ってください。ホーム画面下及び各ページ右上にあります。
+            </li>
+            <li>個人情報（氏名・住所・学校名など）は入力しないでください。</li>
           </ul>
 
           <h2>使い方</h2>
@@ -148,54 +135,30 @@
     </div>
 
     <footer class="container footer">
-      <span class="muted">v0.1</span>
+      <span class="muted">v0.1.2.2</span>
     </footer>
 
     <script type="module">
-      import {
-        saveSettings,
-        loadSettings,
-        initFeedbackModal,
-        initIntroModal,
-      } from "./assets/app.js";
+      import { initFeedbackModal, initIntroModal } from "./assets/app.js";
 
-      // ★ここを quiz.js と同じ埋め込みURLに
+      // フィードバック
       const FEEDBACK_EMBED_URL =
         "https://docs.google.com/forms/d/e/1FAIpQLSfUVun_xGMb8m2UGkkEBVzQe3iBfJY8bk6yUUIiLvsTdh2EpQ/viewform?usp=dialog_embedded=true";
       initFeedbackModal(FEEDBACK_EMBED_URL);
 
-      // ★使用上の注意：初回だけ強制表示（バージョン変えたければキーを変える）
+      // 注意事項（初回強制）
       initIntroModal({
         storageKey: "jhs_intro_seen_v1",
         forceOpenOnFirstVisit: true,
       });
 
-      const countEl = document.getElementById("count");
-      const unitEl = document.getElementById("unit");
-
-      const settings = loadSettings();
-      if (settings.count) countEl.value = settings.count;
-      if (settings.unit) unitEl.value = settings.unit;
-
-      function commit() {
-        saveSettings({
-          count: countEl.value,
-          unit: unitEl.value,
-          source: "teacher",
-        });
-      }
-
       document.getElementById("goQuiz").addEventListener("click", () => {
-        commit();
         location.href = "./quiz.html";
       });
 
       document.getElementById("goWorksheet").addEventListener("click", () => {
-        commit();
         location.href = "./worksheet.html";
       });
-
-      countEl.addEventListener("change", commit);
     </script>
   </body>
 </html>

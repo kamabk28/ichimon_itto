@@ -1,7 +1,7 @@
-// assets/worksheet.js
 import {
   loadQuestions,
   loadSettings,
+  saveSettings,
   sampleWithoutReplacement,
 } from "./app.js";
 
@@ -15,6 +15,7 @@ const paperMetaEl = document.getElementById("paperMeta");
 const regenerateBtn = document.getElementById("regenerate");
 const printBtn = document.getElementById("print");
 const showAnswersEl = document.getElementById("showAnswers");
+const countEl = document.getElementById("count");
 
 function getMode() {
   return document.querySelector('input[name="mode"]:checked')?.value || "A";
@@ -44,11 +45,20 @@ function escapeHtml(s) {
 let allQuestions = [];
 let current = [];
 
+function applyAnswerToggleRule() {
+  const mode = getMode();
+  if (mode === "B") {
+    showAnswersEl.checked = false;
+    showAnswersEl.disabled = true;
+  } else {
+    showAnswersEl.disabled = false;
+  }
+}
+
 function render() {
-  const settings = loadSettings();
-  const count = settings.count || "10";
   const mode = getMode();
   const now = new Date();
+  const count = countEl.value;
 
   paperMetaEl.textContent = `問題数: ${
     count === "all" ? "全問" : count
@@ -64,7 +74,6 @@ function render() {
         </li>
       `;
       }
-      // mode B: 単語→説明（記述欄）
       return `
       <li>
         <b>${escapeHtml(q.answer)}</b>
@@ -74,12 +83,11 @@ function render() {
     })
     .join("");
 
-  const showAns = showAnswersEl.checked;
+  const showAns = showAnswersEl.checked && !showAnswersEl.disabled;
   if (!showAns) {
     hide(aPageEl);
   } else {
     show(aPageEl);
-    // 解答は「A形式でもB形式でも、正答は answer を出す」で統一（ベータ）
     aListEl.innerHTML = current
       .map(
         (q) => `
@@ -98,25 +106,37 @@ async function regenerate() {
   hide(paperEl);
 
   allQuestions = allQuestions.length ? allQuestions : await loadQuestions();
-  const settings = loadSettings();
-  const count = settings.count || "10";
+
+  const count = countEl.value;
+  const s = loadSettings();
+  saveSettings({ ...s, wsCount: count });
 
   current = sampleWithoutReplacement(allQuestions, count);
 
   hide(loadingEl);
   show(paperEl);
+
+  applyAnswerToggleRule();
   render();
 }
 
 regenerateBtn.addEventListener("click", regenerate);
 printBtn.addEventListener("click", () => window.print());
 showAnswersEl.addEventListener("change", render);
-document
-  .querySelectorAll('input[name="mode"]')
-  .forEach((el) => el.addEventListener("change", render));
+countEl.addEventListener("change", regenerate);
 
-regenerate().catch((e) => {
-  console.error(e);
-  loadingEl.textContent =
-    "エラー：CSVの読み込みに失敗しました。ファイル名やパスを確認してください。";
+document.querySelectorAll('input[name="mode"]').forEach((el) => {
+  el.addEventListener("change", () => {
+    applyAnswerToggleRule();
+    render();
+  });
 });
+
+(function init() {
+  const s = loadSettings();
+  countEl.value = s.wsCount || "10";
+  regenerate().catch((e) => {
+    console.error(e);
+    loadingEl.textContent = "エラー：CSVの読み込みに失敗しました。";
+  });
+})();

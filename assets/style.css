@@ -433,3 +433,44 @@ button.danger {
 button.secondary {
   background: transparent;
 }
+
+/* 大きいボタン */
+button.big {
+  padding: 14px 18px;
+  font-size: 1.05rem;
+  border-radius: 14px;
+}
+
+/* モード選択のボタンを並べやすく */
+.mode-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.mode-actions > button {
+  flex: 1 1 260px;
+}
+
+/* 得点バー（横長・左右配置） */
+.score-banner {
+  margin: 12px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #0f1117;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.score-banner .left {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.score-banner .right {
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 600;
+}

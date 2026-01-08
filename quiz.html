@@ -27,10 +27,30 @@
           <span id="scoreText" class="muted"></span>
         </div>
 
+        <div class="row">
+          <label for="count">問題数</label>
+          <select id="count">
+            <option value="10">10問</option>
+            <option value="20">20問</option>
+            <option value="30">30問</option>
+            <option value="50">50問</option>
+            <option value="all">全問</option>
+          </select>
+        </div>
+
+        <div class="actions">
+          <button id="generate" class="primary">この条件で出題</button>
+        </div>
+
+        <div id="scoreBanner" class="score-banner hidden">
+          <div id="scoreBig" class="left"></div>
+          <div id="scoreRate" class="right"></div>
+        </div>
+
         <div id="questionList" class="q-blocks"></div>
 
         <div class="actions">
-          <button id="gradeAll" class="primary">一気に採点</button>
+          <button id="gradeAll" class="primary big">一気に採点</button>
 
           <!-- 誤爆防止：やり直しは「その他」に格納 -->
           <details class="more">
@@ -51,8 +71,11 @@
       </section>
 
       <section id="result" class="hidden">
-        <h2>結果</h2>
-        <p id="resultSummary"></p>
+        <h2>結果(上にスクロールして戻っても採点結果が見れます)</h2>
+        <div id="resultBar" class="score-banner">
+          <div id="resultScore" class="left"></div>
+          <div id="resultRate" class="right"></div>
+        </div>
 
         <div id="wrongList"></div>
 

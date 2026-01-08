@@ -21,17 +21,19 @@
     <main class="container card">
       <section class="no-print">
         <div class="row">
-          <label>出力形式</label>
-          <div class="inline">
-            <label class="inline"
-              ><input type="radio" name="mode" value="A" checked />
-              A（説明→単語）</label
-            >
-            <label class="inline"
-              ><input type="radio" name="mode" value="B" />
-              B（単語→説明）</label
-            >
-          </div>
+          <label for="count">問題数</label>
+          <select id="count">
+            <option value="10">10問</option>
+            <option value="20">20問</option>
+            <option value="30">30問</option>
+            <option value="50">50問</option>
+            <option value="all">全問</option>
+          </select>
+        </div>
+
+        <div class="actions">
+          <button id="print" class="primary big">印刷（PDF保存）</button>
+          <button id="regenerate" class="secondary">再抽出</button>
         </div>
 
         <div class="row">

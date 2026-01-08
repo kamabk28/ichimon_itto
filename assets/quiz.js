@@ -1,15 +1,16 @@
-// assets/quiz.js
 import {
   loadQuestions,
   loadSettings,
+  saveSettings,
   sampleWithoutReplacement,
   normalizeAnswer,
   getAcceptedAnswers,
 } from "./app.js";
 
-/** ★ここを必ず差し替え：Googleフォーム埋め込みURL（embedded=true のやつ） */
 const FEEDBACK_EMBED_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSfUVun_xGMb8m2UGkkEBVzQe3iBfJY8bk6yUUIiLvsTdh2EpQ/viewform?usp=dialog_embedded=true";
+import { initFeedbackModal } from "./app.js";
+initFeedbackModal(FEEDBACK_EMBED_URL);
 
 const loadingEl = document.getElementById("loading");
 const quizEl = document.getElementById("quiz");
@@ -19,6 +20,9 @@ const questionListEl = document.getElementById("questionList");
 const metaTextEl = document.getElementById("metaText");
 const scoreTextEl = document.getElementById("scoreText");
 
+const countEl = document.getElementById("count");
+const generateBtn = document.getElementById("generate");
+
 const gradeAllBtn = document.getElementById("gradeAll");
 const retryAllBtn = document.getElementById("retryAll");
 
@@ -27,10 +31,13 @@ const wrongListEl = document.getElementById("wrongList");
 const retryWrongBtn = document.getElementById("retryWrong");
 const backTopBtn = document.getElementById("backTop");
 
-// フィードバックモーダル
-const fbBackdrop = document.getElementById("fbBackdrop");
-const fbClose = document.getElementById("fbClose");
-const fbFrame = document.getElementById("fbFrame");
+const resultScore = document.getElementById("resultScore");
+const resultRate = document.getElementById("resultRate");
+
+// 得点バナー
+const scoreBanner = document.getElementById("scoreBanner");
+const scoreBig = document.getElementById("scoreBig");
+const scoreRate = document.getElementById("scoreRate");
 
 function show(el) {
   el.classList.remove("hidden");
@@ -53,73 +60,42 @@ function escapeHtml(s) {
   );
 }
 
-function openFeedback() {
-  if (!FEEDBACK_EMBED_URL || FEEDBACK_EMBED_URL.includes("YOUR_GOOGLE_FORM")) {
-    alert(
-      "フォームURL（埋め込みURL）が未設定です。assets/quiz.js の FEEDBACK_EMBED_URL を設定してください。"
-    );
-    return;
-  }
-  fbFrame.src = FEEDBACK_EMBED_URL;
-  show(fbBackdrop);
-}
-
-function closeFeedback() {
-  hide(fbBackdrop);
-  // フォームを閉じたら読み込みも止める（軽くする）
-  fbFrame.src = "";
-}
-
-// モーダルイベント
-document.querySelectorAll(".open-feedback").forEach((btn) => {
-  btn.addEventListener("click", openFeedback);
-});
-fbClose.addEventListener("click", closeFeedback);
-fbBackdrop.addEventListener("click", (e) => {
-  if (e.target === fbBackdrop) closeFeedback();
-});
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && !fbBackdrop.classList.contains("hidden"))
-    closeFeedback();
-});
-
 let allQuestions = [];
 let questions = [];
 let graded = false;
-let history = []; // { q, user, correct }
+let history = [];
 
 function renderQuestions() {
   questionListEl.innerHTML = questions
-    .map((q, idx) => {
-      const id = q.id || "";
-      const unit = q.unit || "";
-      return `
-      <div class="q-block" id="q-${idx}" data-idx="${idx}">
-        <div class="q-head">
-          <div class="q-meta">
-            <span class="muted">#${idx + 1}</span>
-            ${id ? `<span class="muted">ID: ${escapeHtml(id)}</span>` : ""}
-            ${
-              unit ? `<span class="muted">単元: ${escapeHtml(unit)}</span>` : ""
-            }
-          </div>
-          <div class="mark" id="mark-${idx}" aria-label="採点結果"></div>
+    .map(
+      (q, idx) => `
+    <div class="q-block" id="q-${idx}">
+      <div class="q-head">
+        <div class="q-meta">
+          <span class="muted">#${idx + 1}</span>
+          ${q.id ? `<span class="muted">ID: ${escapeHtml(q.id)}</span>` : ""}
+          ${
+            q.unit
+              ? `<span class="muted">単元: ${escapeHtml(q.unit)}</span>`
+              : ""
+          }
         </div>
-
-        <div class="prompt">${escapeHtml(q.prompt)}</div>
-
-        <div class="row">
-          <label for="ans-${idx}">回答（単語）</label>
-          <input id="ans-${idx}" type="text" autocomplete="off" />
-        </div>
-
-        <div class="muted small" id="fb-${idx}"></div>
+        <div class="mark" id="mark-${idx}"></div>
       </div>
-    `;
-    })
+
+      <div class="prompt">${escapeHtml(q.prompt)}</div>
+
+      <div class="row">
+        <label for="ans-${idx}">回答（単語）</label>
+        <input id="ans-${idx}" type="text" autocomplete="off" />
+      </div>
+
+      <div class="muted small" id="fb-${idx}"></div>
+    </div>
+  `
+    )
     .join("");
 
-  // Enterで次の入力へ
   questions.forEach((_, idx) => {
     const input = document.getElementById(`ans-${idx}`);
     input.addEventListener("keydown", (e) => {
@@ -137,6 +113,34 @@ function setMeta() {
   scoreTextEl.textContent = graded
     ? `正解: ${history.filter((h) => h.correct).length}`
     : "未採点";
+}
+
+function resetGradingUI() {
+  graded = false;
+  history = [];
+  hide(resultEl);
+  hide(scoreBanner);
+  scoreBig.textContent = "";
+  scoreRate.textContent = "";
+
+  questions.forEach((_, idx) => {
+    const input = document.getElementById(`ans-${idx}`);
+    const blockEl = document.getElementById(`q-${idx}`);
+    const markEl = document.getElementById(`mark-${idx}`);
+    const fbEl = document.getElementById(`fb-${idx}`);
+
+    input.disabled = false;
+    input.value = "";
+    markEl.textContent = "";
+    fbEl.textContent = "";
+
+    blockEl.classList.remove("graded-ok", "graded-ng");
+    markEl.classList.remove("ok", "ng");
+  });
+
+  setMeta();
+  const first = document.getElementById("ans-0");
+  if (first) first.focus();
 }
 
 function gradeAll() {
@@ -160,33 +164,34 @@ function gradeAll() {
     const markEl = document.getElementById(`mark-${idx}`);
     const fbEl = document.getElementById(`fb-${idx}`);
 
-    // ○×
     markEl.textContent = ok ? "○" : "×";
     markEl.classList.toggle("ok", ok);
     markEl.classList.toggle("ng", !ok);
 
-    // 背景色（薄い黄緑/赤）
     blockEl.classList.toggle("graded-ok", ok);
     blockEl.classList.toggle("graded-ng", !ok);
 
-    // フィードバック
-    if (ok) {
-      fbEl.innerHTML = `<span class="ok-text">正解</span>`;
-    } else {
-      fbEl.innerHTML = `<span class="ng-text">不正解</span>　正答：<b>${escapeHtml(
-        q.answer
-      )}</b>`;
-    }
+    fbEl.innerHTML = ok
+      ? `<span class="ok-text">正解</span>`
+      : `<span class="ng-text">不正解</span>　正答：<b>${escapeHtml(
+          q.answer
+        )}</b>`;
 
-    // 採点後は入力不可
     input.disabled = true;
   });
+
+  // 得点を大きく表示
+  const total = questions.length;
+  const rate = total ? Math.round((score / total) * 100) : 0;
+  scoreBig.textContent = `得点：${score} / ${total}`;
+  scoreRate.textContent = `正答率：${rate}%`;
+  show(scoreBanner);
 
   setMeta();
   show(resultEl);
 
-  // 結果まとめ
-  resultSummaryEl.textContent = `${questions.length}問中 ${score}問正解`;
+  resultScore.textContent = `得点：${score} / ${total}`;
+  resultRate.textContent = `正答率：${rate}%`;
 
   const wrong = history.filter((h) => !h.correct);
   if (wrong.length === 0) {
@@ -195,74 +200,76 @@ function gradeAll() {
   } else {
     retryWrongBtn.disabled = false;
     wrongListEl.innerHTML = wrong
-      .map((h) => {
-        const q = h.q;
-        return `
-        <div class="card" style="margin:10px 0;">
-          <div class="muted">ID: ${escapeHtml(q.id || "")}</div>
-          <div style="margin-top:6px;"><b>問題</b><br>${escapeHtml(
-            q.prompt
-          )}</div>
-          <div style="margin-top:6px;"><b>あなたの答え</b><br>${escapeHtml(
-            h.user || "(未入力)"
-          )}</div>
-          <div style="margin-top:6px;"><b>正答</b><br>${escapeHtml(
-            q.answer
-          )}</div>
-        </div>
-      `;
-      })
+      .map(
+        (h) => `
+      <div class="card" style="margin:10px 0;">
+        <div class="muted">ID: ${escapeHtml(h.q.id || "")}</div>
+        <div style="margin-top:6px;"><b>問題</b><br>${escapeHtml(
+          h.q.prompt
+        )}</div>
+        <div style="margin-top:6px;"><b>あなたの答え</b><br>${escapeHtml(
+          h.user || "(未入力)"
+        )}</div>
+        <div style="margin-top:6px;"><b>正答</b><br>${escapeHtml(
+          h.q.answer
+        )}</div>
+      </div>
+    `
+      )
       .join("");
   }
 
   resultEl.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-async function init(customQuestions = null) {
+async function generate() {
   show(loadingEl);
   hide(quizEl);
   hide(resultEl);
 
-  allQuestions = await loadQuestions();
+  if (!allQuestions.length) allQuestions = await loadQuestions();
 
-  const settings = loadSettings();
-  const count = settings.count || "10";
+  const count = countEl.value;
+  const s = loadSettings();
+  saveSettings({ ...s, quizCount: count });
 
-  questions = customQuestions ?? sampleWithoutReplacement(allQuestions, count);
-
-  graded = false;
-  history = [];
+  questions = sampleWithoutReplacement(allQuestions, count);
 
   hide(loadingEl);
   show(quizEl);
 
   renderQuestions();
+  resetGradingUI();
   setMeta();
-
-  const first = document.getElementById("ans-0");
-  if (first) first.focus();
 }
 
+generateBtn.addEventListener("click", generate);
 gradeAllBtn.addEventListener("click", gradeAll);
 
+// 誤爆対策：入力消去（同じ問題セット）
 retryAllBtn.addEventListener("click", () => {
   const ok = confirm("入力がすべて消えます。やり直しますか？");
   if (!ok) return;
-  location.reload();
+  resetGradingUI();
 });
 
 retryWrongBtn.addEventListener("click", () => {
   const wrongQs = history.filter((h) => !h.correct).map((h) => h.q);
-  if (wrongQs.length === 0) return;
-  init(wrongQs);
+  if (!wrongQs.length) return;
+  questions = wrongQs;
+  renderQuestions();
+  resetGradingUI();
 });
 
 backTopBtn.addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-init().catch((e) => {
-  console.error(e);
-  loadingEl.textContent =
-    "エラー：CSVの読み込みに失敗しました。ファイル名やパスを確認してください。";
-});
+(function init() {
+  const s = loadSettings();
+  countEl.value = s.quizCount || "10";
+  generate().catch((e) => {
+    console.error(e);
+    loadingEl.textContent = "エラー：CSVの読み込みに失敗しました。";
+  });
+})();
