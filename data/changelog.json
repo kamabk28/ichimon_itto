@@ -1,5 +1,5 @@
 {
-  "latest": "v0.2",
+  "latest": "v0.3",
   "items": [
     {
       "version": "v0.2",
@@ -15,10 +15,12 @@
     },
 
     {
-      "version": "-",
-      "date": "-",
-      "changes": ["-"],
-      "fixes": []
+      "version": "v0.3",
+      "date": "2026-01-28",
+      "changes": [
+        "ベータ版から製品版へ"
+      ],
+      "fixes": ["問題を一部修正"]
     }
   ]
 }
