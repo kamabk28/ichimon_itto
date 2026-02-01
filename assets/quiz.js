@@ -56,7 +56,7 @@ function escapeHtml(s) {
         ">": "&gt;",
         '"': "&quot;",
         "'": "&#039;",
-      }[m])
+      })[m],
   );
 }
 
@@ -92,7 +92,7 @@ function renderQuestions() {
 
       <div class="muted small" id="fb-${idx}"></div>
     </div>
-  `
+  `,
     )
     .join("");
 
@@ -174,7 +174,7 @@ function gradeAll() {
     fbEl.innerHTML = ok
       ? `<span class="ok-text">正解</span>`
       : `<span class="ng-text">不正解</span>　正答：<b>${escapeHtml(
-          q.answer
+          q.answer,
         )}</b>`;
 
     input.disabled = true;
@@ -195,7 +195,7 @@ function gradeAll() {
 
   const wrong = history.filter((h) => !h.correct);
   if (wrong.length === 0) {
-    wrongListEl.innerHTML = `<p>全部正解！🎉</p>`;
+    wrongListEl.innerHTML = `<p>全部正解！</p>`;
     retryWrongBtn.disabled = true;
   } else {
     retryWrongBtn.disabled = false;
@@ -205,16 +205,16 @@ function gradeAll() {
       <div class="card" style="margin:10px 0;">
         <div class="muted">ID: ${escapeHtml(h.q.id || "")}</div>
         <div style="margin-top:6px;"><b>問題</b><br>${escapeHtml(
-          h.q.prompt
+          h.q.prompt,
         )}</div>
         <div style="margin-top:6px;"><b>あなたの答え</b><br>${escapeHtml(
-          h.user || "(未入力)"
+          h.user || "(未入力)",
         )}</div>
         <div style="margin-top:6px;"><b>正答</b><br>${escapeHtml(
-          h.q.answer
+          h.q.answer,
         )}</div>
       </div>
-    `
+    `,
       )
       .join("");
   }
